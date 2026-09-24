@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IPL Analytics Lab | 10 Seasons Decennial Intelligence (2008-2017)</title>
+  <meta name="description" content="Interactive Full-Stack Data Analysis Platform on 10 Seasons of IPL Cricket. Explore toss impacts, player deep dives, team head-to-head simulations, and live SQL querying.">
+  
+  <!-- Modern Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  
+  <!-- Chart.js for Interactive Visualizations -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Background Glow Accents -->
+  <div class="glow-orb orb-1"></div>
+  <div class="glow-orb orb-2"></div>
+
+  <!-- Navigation Bar -->
+  <header class="app-header">
+    <div class="header-left">
+      <div class="brand-badge">
+        <span class="cricket-ball">🏏</span>
+        <div class="brand-text">
+          <h1>IPL Analytics Lab</h1>
+          <span class="brand-sub">2008–2017 Decennial Cricket Intelligence</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab Navigation -->
+    <nav class="nav-tabs" role="tablist">
+      <button class="nav-tab active" data-tab="overview" id="tab-overview" role="tab">
+        <span class="tab-icon">📊</span> Overview & Macro Trends
+      </button>
+      <button class="nav-tab" data-tab="leaderboards" id="tab-leaderboards" role="tab">
+        <span class="tab-icon">⚡</span> Batting & Bowling
+      </button>
+      <button class="nav-tab" data-tab="rivalry" id="tab-rivalry" role="tab">
+        <span class="tab-icon">⚔️</span> Head-to-Head
+      </button>
+      <button class="nav-tab" data-tab="player" id="tab-player" role="tab">
+        <span class="tab-icon">🔍</span> Player Deep Dive
+      </button>
+      <button class="nav-tab" data-tab="sql-lab" id="tab-sql-lab" role="tab">
+        <span class="tab-icon">💻</span> Live SQL Lab
+      </button>
+    </nav>
+
+    <div class="header-right">
+      <div class="season-filter-wrap">
+        <label for="global-season-select">Season:</label>
+        <select id="global-season-select" class="custom-select">
+          <option value="all">All Seasons (2008-2017)</option>
+        </select>
+      </div>
+      <a href="/docs" target="_blank" class="docs-link" title="Open Interactive API Swagger Documentation">
+        <span>📖 API Docs</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="app-container">
+
+    <!-- ======================================================== -->
+    <!-- TAB 1: OVERVIEW & MACRO TRENDS                           -->
+    <!-- ======================================================== -->
+    <section id="panel-overview" class="tab-panel active">
+      <!-- KPI Metric Cards Grid -->
+      <div class="kpi-grid">
+        <div class="kpi-card" id="kpi-matches">
+          <div class="kpi-icon">🏟️</div>
+          <div class="kpi-data">
+            <span class="kpi-value" id="val-matches">636</span>
+            <span class="kpi-label">Total Matches</span>
+          </div>
+          <span class="kpi-badge">10 Seasons</span>
+        </div>
+
+        <div class="kpi-card" id="kpi-deliveries">
+          <div class="kpi-icon">⚡</div>
+          <div class="kpi-data">
+            <span class="kpi-value" id="val-deliveries">150,460</span>
+            <span class="kpi-label">Balls Bowled</span>
+          </div>
+          <span class="kpi-badge">Complete Ball-by-Ball</span>
+        </div>
+
+        <div class="kpi-card" id="kpi-runs">
+          <div class="kpi-icon">🔥</div>
+          <div class="kpi-data">
+            <span class="kpi-value" id="val-runs">--</span>
+            <span class="kpi-label">Total Runs Scored</span>
+          </div>
+          <span class="kpi-badge accent-gold" id="val-boundaries">-- Fours / Sixes</span>
+        </div>
+
+        <div class="kpi-card" id="kpi-toss">
+          <div class="kpi-icon">🪙</div>
+          <div class="kpi-data">
+            <span class="kpi-value" id="val-toss">51.4%</span>
+            <span class="kpi-label">Toss Winner Win Rate</span>
+          </div>
+          <span class="kpi-badge badge-neutral">Pure Coin Flip Edge</span>
+        </div>
+
+        <div class="kpi-card" id="kpi-chasing">
+          <div class="kpi-icon">🎯</div>
+          <div class="kpi-data">
+            <span class="kpi-value" id="val-chasing">53.6%</span>
+            <span class="kpi-label">Chasing Win Rate</span>
+          </div>
+          <span class="kpi-badge badge-success">Growing Advantage</span>
+        </div>
+
+        <div class="kpi-card" id="kpi-topteam">
+          <div class="kpi-icon">👑</div>
+          <div class="kpi-data">
+            <span class="kpi-value" id="val-topteam">Mumbai Indians</span>
+            <span class="kpi-label">Most Match Wins</span>
+          </div>
+          <span class="kpi-badge badge-info" id="val-topteam-wins">92 Wins</span>
+        </div>
+      </div>
+
+      <!-- Macro Analytics Charts Grid -->
+      <div class="charts-grid-overview">
+        <!-- Toss Impact Card -->
+        <div class="chart-card">
+          <div class="card-header">
+            <div>
+              <h3>Toss Impact Analysis</h3>
+              <p class="card-subtitle">Does winning the toss predict match outcome?</p>
+            </div>
+            <div class="card-tag">Toss Myth Debunked</div>
+          </div>
+          <div class="chart-body chart-body-donut">
+            <canvas id="chart-toss"></canvas>
+          </div>
+          <div class="card-footer-note">
+            💡 <strong>Key Finding:</strong> Across 636 matches, toss winners won only <strong>51.4%</strong> of matches, proving toss advantage is practically negligible in T20.
+          </div>
+        </div>
+
+        <!-- Chasing Trend Card -->
+        <div class="chart-card">
+          <div class="card-header">
+            <div>
+              <h3>Chasing (Batting 2nd) Win % Evolution</h3>
+              <p class="card-subtitle">Win rate of chasing teams by season (2008-2017)</p>
+            </div>
+            <div class="card-tag tag-green">Modern Strategy</div>
+          </div>
+          <div class="chart-body">
+            <canvas id="chart-chase"></canvas>
+          </div>
+          <div class="card-footer-note">
+            📈 <strong>Trend:</strong> Chasing win rate surged from <strong>42.4%</strong> in 2009 to a peak <strong>68.3%</strong> in 2016 as teams mastered target pacing and boundary control.
+          </div>
+        </div>
+
+        <!-- Stadium Run Production Card -->
+        <div class="chart-card chart-card-full">
+          <div class="card-header">
+            <div>
+              <h3>Top 10 Highest Scoring Stadiums</h3>
+              <p class="card-subtitle">Average total runs per match (Venues with ≥ 10 matches)</p>
+            </div>
+            <div class="card-tag tag-purple">Venue Dynamics</div>
+          </div>
+          <div class="chart-body">
+            <canvas id="chart-venues"></canvas>
+          </div>
+          <div class="card-footer-note">
+            🏟️ <strong>Venue Context:</strong> M. Chinnaswamy Stadium (Bengaluru) and Hyderabad consistently produce the highest match aggregates in IPL history.
+          </div>
+        </div>
+      </div>
+
+      <!-- Historical Season Roll of Champions -->
+      <div class="champions-card">
+        <h3>🏆 IPL Roll of Champions (2008–2017)</h3>
+        <div class="champions-timeline" id="champions-timeline">
+          <!-- Populated dynamically via JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- TAB 2: BATTING & BOWLING LEADERBOARDS                    -->
+    <!-- ======================================================== -->
+    <section id="panel-leaderboards" class="tab-panel">
+      <div class="filter-bar">
+        <div class="filter-group">
+          <label for="leaderboard-season-select">Filter by Season:</label>
+          <select id="leaderboard-season-select" class="custom-select">
+            <option value="all">All Seasons (Career)</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="bowler-balls-slider">Min Balls Bowled: <span id="bowler-balls-val">200</span></label>
+          <input type="range" id="bowler-balls-slider" min="60" max="600" step="30" value="200" class="custom-slider">
+        </div>
+      </div>
+
+      <div class="dual-grid">
+        <!-- Batting Leaderboard -->
+        <div class="analytics-card">
+          <div class="card-header">
+            <div>
+              <h3>🏏 Top Run Scorers</h3>
+              <p class="card-subtitle">Orange Cap Contenders & Career Aggregates</p>
+            </div>
+            <span class="card-tag tag-gold">Batting Masters</span>
+          </div>
+          <div class="chart-body">
+            <canvas id="chart-batsmen"></canvas>
+          </div>
+          <div class="table-responsive">
+            <table class="data-table" id="table-batsmen">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Batsman</th>
+                  <th>Runs</th>
+                  <th>Innings</th>
+                  <th>Strike Rate</th>
+                  <th>4s / 6s</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Populated dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Bowling Leaderboard -->
+        <div class="analytics-card">
+          <div class="card-header">
+            <div>
+              <h3>🎯 Best Bowling Economy</h3>
+              <p class="card-subtitle">Most Economical Bowlers (Min Balls Filtered)</p>
+            </div>
+            <span class="card-tag tag-cyan">Bowling Efficiency</span>
+          </div>
+          <div class="chart-body">
+            <canvas id="chart-bowlers"></canvas>
+          </div>
+          <div class="table-responsive">
+            <table class="data-table" id="table-bowlers">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Bowler</th>
+                  <th>Economy</th>
+                  <th>Overs</th>
+                  <th>Wickets</th>
+                  <th>Runs</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Populated dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- TAB 3: HEAD-TO-HEAD RIVALRY                              -->
+    <!-- ======================================================== -->
+    <section id="panel-rivalry" class="tab-panel">
+      <div class="rivalry-controls-card">
+        <h3>⚔️ Franchise Head-to-Head Simulator</h3>
+        <p class="card-subtitle">Compare any two IPL teams across their entire competitive match history</p>
+        
+        <div class="rivalry-selectors">
+          <div class="team-select-box">
+            <label for="rival-team-1">Team 1</label>
+            <select id="rival-team-1" class="custom-select team-dropdown"></select>
+          </div>
+          <div class="vs-badge">VS</div>
+          <div class="team-select-box">
+            <label for="rival-team-2">Team 2</label>
+            <select id="rival-team-2" class="custom-select team-dropdown"></select>
+          </div>
+          <button id="btn-compare-rivals" class="btn btn-primary">
+            <span>⚡ Compare Rivalry</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Rivalry Results Display -->
+      <div id="rivalry-results" class="rivalry-display-grid">
+        <!-- Rivalry Breakdown Card -->
+        <div class="analytics-card rivalry-hero-card">
+          <div class="rivalry-header">
+            <div class="team-side team-1-side">
+              <h2 id="r-team1-name">Mumbai Indians</h2>
+              <div class="win-count" id="r-team1-wins">12 Wins</div>
+              <span class="win-pct" id="r-team1-pct">54.5%</span>
+            </div>
+            
+            <div class="rivalry-center-stat">
+              <span class="total-clashes" id="r-total-clashes">22 Matches</span>
+              <div class="clash-bar-wrap">
+                <div class="clash-bar-fill team-1-bar" id="r-bar-team1" style="width: 55%;"></div>
+                <div class="clash-bar-fill team-2-bar" id="r-bar-team2" style="width: 45%;"></div>
+              </div>
+              <span class="no-result-text" id="r-no-result">0 Ties / No Results</span>
+            </div>
+
+            <div class="team-side team-2-side">
+              <h2 id="r-team2-name">Chennai Super Kings</h2>
+              <div class="win-count" id="r-team2-wins">10 Wins</div>
+              <span class="win-pct" id="r-team2-pct">45.5%</span>
+            </div>
+          </div>
+
+          <!-- Head to head statistical metrics -->
+          <div class="rivalry-stats-row">
+            <div class="r-stat-box">
+              <span class="r-label">Avg Inning Score</span>
+              <div class="r-duo-val">
+                <span class="c-team1" id="r-team1-avg">161.4</span>
+                <span class="r-divider">vs</span>
+                <span class="c-team2" id="r-team2-avg">158.2</span>
+              </div>
+            </div>
+            <div class="r-stat-box">
+              <span class="r-label">Highest Match Score</span>
+              <div class="r-duo-val">
+                <span class="c-team1" id="r-team1-max">208</span>
+                <span class="r-divider">vs</span>
+                <span class="c-team2" id="r-team2-max">200</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Head-to-Head Encounters Table -->
+        <div class="analytics-card">
+          <div class="card-header">
+            <h3>Recent Encounters Log</h3>
+            <span class="card-tag">Chronological Match History</span>
+          </div>
+          <div class="table-responsive">
+            <table class="data-table" id="table-rivalry-matches">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Season</th>
+                  <th>Venue</th>
+                  <th>Toss</th>
+                  <th>Winner</th>
+                  <th>Margin</th>
+                  <th>Player of Match</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Populated dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- TAB 4: PLAYER DEEP DIVE                                  -->
+    <!-- ======================================================== -->
+    <section id="panel-player" class="tab-panel">
+      <!-- Search and Quick Select Card -->
+      <div class="player-search-card">
+        <h3>🔍 Search Any IPL Player</h3>
+        <p class="card-subtitle">Type any batsman or bowler to explore career performance metrics and yearly progression</p>
+        
+        <div class="player-search-row">
+          <div class="search-input-wrap">
+            <input type="text" id="player-search-input" placeholder="Type player name (e.g. Virat Kohli, MS Dhoni, Suresh Raina)..." autocomplete="off">
+            <div id="player-suggestions" class="suggestions-dropdown hidden"></div>
+          </div>
+          <button id="btn-search-player" class="btn btn-primary">Search</button>
+        </div>
+
+        <div class="quick-picks">
+          <span class="qp-label">Quick picks:</span>
+          <button class="chip" data-player="V Kohli">Virat Kohli</button>
+          <button class="chip" data-player="MS Dhoni">MS Dhoni</button>
+          <button class="chip" data-player="SK Raina">Suresh Raina</button>
+          <button class="chip" data-player="RG Sharma">Rohit Sharma</button>
+          <button class="chip" data-player="CH Gayle">Chris Gayle</button>
+          <button class="chip" data-player="AB de Villiers">AB de Villiers</button>
+          <button class="chip" data-player="SL Malinga">Lasith Malinga</button>
+          <button class="chip" data-player="SP Narine">Sunil Narine</button>
+        </div>
+      </div>
+
+      <!-- Player Profile Card -->
+      <div id="player-profile" class="player-profile-view">
+        <div class="player-hero-card">
+          <div class="player-identity">
+            <div class="player-avatar" id="p-avatar">VK</div>
+            <div class="player-names">
+              <h2 id="p-name">Virat Kohli</h2>
+              <div class="player-badges">
+                <span class="badge badge-accent" id="p-potm">11 POTM Awards</span>
+                <span class="badge badge-neutral" id="p-type">Batsman / All-rounder</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Batting Metrics Cards -->
+          <div class="profile-metrics-grid">
+            <div class="pm-box">
+              <span class="pm-val" id="p-runs">4,423</span>
+              <span class="pm-lbl">Total Runs</span>
+            </div>
+            <div class="pm-box">
+              <span class="pm-val" id="p-sr">129.8</span>
+              <span class="pm-lbl">Strike Rate</span>
+            </div>
+            <div class="pm-box">
+              <span class="pm-val" id="p-hs">113</span>
+              <span class="pm-lbl">Highest Score</span>
+            </div>
+            <div class="pm-box">
+              <span class="pm-val" id="p-inns">141</span>
+              <span class="pm-lbl">Innings</span>
+            </div>
+            <div class="pm-box">
+              <span class="pm-val" id="p-fifties">30 / 4</span>
+              <span class="pm-lbl">50s / 100s</span>
+            </div>
+            <div class="pm-box">
+              <span class="pm-val" id="p-boundaries">384 / 160</span>
+              <span class="pm-lbl">4s / 6s</span>
+            </div>
+            <div class="pm-box">
+              <span class="pm-val" id="p-wickets">4</span>
+              <span class="pm-lbl">Wickets</span>
+            </div>
+            <div class="pm-box">
+              <span class="pm-val" id="p-economy">8.6</span>
+              <span class="pm-lbl">Bowling Econ</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Player Yearly Progression Chart -->
+        <div class="analytics-card">
+          <div class="card-header">
+            <h3>Yearly Performance Trajectory</h3>
+            <span class="card-tag">Season-by-Season Runs & Strike Rate</span>
+          </div>
+          <div class="chart-body">
+            <canvas id="chart-player-yearly"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- TAB 5: LIVE SQL LAB                                      -->
+    <!-- ======================================================== -->
+    <section id="panel-sql-lab" class="tab-panel">
+      <div class="sql-lab-grid">
+        <!-- Left: Query Selector & Editor -->
+        <div class="sql-editor-card">
+          <div class="card-header">
+            <div>
+              <h3>💻 Interactive SQL Console</h3>
+              <p class="card-subtitle">Run queries directly against the indexed SQLite <code>ipl.db</code></p>
+            </div>
+            <span class="card-tag tag-cyan">Read-Only Safe</span>
+          </div>
+
+          <div class="preset-selector-row">
+            <label for="sql-preset-select">Canonical Interview Queries:</label>
+            <select id="sql-preset-select" class="custom-select">
+              <option value="">-- Choose a Pre-Engineered Query --</option>
+            </select>
+          </div>
+
+          <!-- Insight pill -->
+          <div id="sql-insight-box" class="sql-insight-banner hidden">
+            <span class="insight-icon">💡</span>
+            <div id="sql-insight-text">Select a canonical query to read analytical context.</div>
+          </div>
+
+          <!-- Code Editor Area -->
+          <div class="code-editor-wrap">
+            <textarea id="sql-query-input" rows="11" spellcheck="false" placeholder="Write your SQL SELECT query here..."></textarea>
+          </div>
+
+          <div class="editor-actions">
+            <button id="btn-run-sql" class="btn btn-primary">
+              <span>▶ Run Query</span>
+            </button>
+            <button id="btn-reset-sql" class="btn btn-secondary">
+              <span>Reset</span>
+            </button>
+            <div class="query-stats" id="query-stats">
+              <span id="stat-runtime">Ready</span>
+              <span id="stat-rows"></span>
+            </div>
+            <button id="btn-export-csv" class="btn btn-secondary btn-sm" disabled>
+              <span>📥 Export CSV</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Right: Technical Notes & Techniques -->
+        <div class="sql-interview-card">
+          <div class="card-header">
+            <h3>🎯 Data Analyst SQL Skills Tested</h3>
+            <span class="card-tag tag-gold">Interview Ready</span>
+          </div>
+          <div class="skills-list">
+            <div class="skill-item">
+              <strong>1. Window Functions (DENSE_RANK)</strong>
+              <p><code>DENSE_RANK() OVER (PARTITION BY season ORDER BY runs DESC)</code> to isolate each season's top scorer. Standard interview pattern for Nth-highest problems.</p>
+            </div>
+            <div class="skill-item">
+              <strong>2. Common Table Expressions (CTEs)</strong>
+              <p><code>WITH batting_first AS (...)</code> separates logic into clear, readable stages before performing outer joins.</p>
+            </div>
+            <div class="skill-item">
+              <strong>3. Conditional Aggregation</strong>
+              <p><code>SUM(CASE WHEN toss_winner = winner THEN 1 ELSE 0 END)</code> performs conditional counts and rates in a single efficient scan.</p>
+            </div>
+            <div class="skill-item">
+              <strong>4. Statistical Thresholds via HAVING</strong>
+              <p><code>HAVING COUNT(*) >= 200</code> filters out small-sample noise to ensure strike-rate and economy leaderboards are statistically meaningful.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live Results Table Card -->
+      <div class="analytics-card sql-results-card">
+        <div class="card-header">
+          <h3>Query Results</h3>
+          <span class="card-tag" id="results-count-tag">0 Rows</span>
+        </div>
+        <div id="sql-error-box" class="sql-error-alert hidden"></div>
+        <div class="table-responsive">
+          <table class="data-table" id="table-sql-results">
+            <thead id="thead-sql-results">
+              <tr><th>Status</th></tr>
+            </thead>
+            <tbody id="tbody-sql-results">
+              <tr><td class="empty-state">Run a query or select a preset above to view live tabular results.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="app-footer">
+    <p>IPL Match & Player Performance Analytics Platform • Data sourced from Kaggle/Cricsheet (2008–2017) • Built with FastAPI, SQLite & Vanilla Web Technologies</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
